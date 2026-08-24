@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — Calorie & Macro Tracker</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --text: #3a3a3a;
+        --text-h: #08060d;
+        --bg: #fff;
+        --border: #e5e4e7;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: #b8bcc4;
+          --text-h: #f3f4f6;
+          --bg: #16171d;
+          --border: #2e303a;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 system-ui, 'Segoe UI', Roboto, sans-serif;
+      }
+      main {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+      h1,
+      h2 {
+        color: var(--text-h);
+      }
+      h1 {
+        font-size: 28px;
+      }
+      h2 {
+        font-size: 19px;
+        margin-top: 32px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      code {
+        background: rgba(128, 128, 128, 0.15);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy Policy</h1>
+      <p>
+        Calorie &amp; Macro Tracker is a personal, single-user nutrition and fitness tracking
+        app. It has no user accounts, no server-side database, and no analytics or tracking
+        of any kind. This page explains what data the app touches and where it goes.
+      </p>
+
+      <h2>Data stored locally in your browser</h2>
+      <p>
+        Your profile (body stats, goal, optional photo), food log, and synced WHOOP metrics
+        are stored only in your browser's <code>localStorage</code>. None of it is sent to any
+        server the app operator controls. Clearing your browser data or using a different
+        device/browser starts fresh.
+      </p>
+
+      <h2>Third-party services this app talks to</h2>
+      <ul>
+        <li>
+          <strong>Open Food Facts</strong> — barcode and food-name lookups are sent to
+          <a href="https://world.openfoodfacts.org/" target="_blank" rel="noopener">Open Food
+          Facts</a>'s public API to retrieve nutrition facts. No account information or
+          personal data is included in these requests, only the barcode or search text.
+        </li>
+        <li>
+          <strong>WHOOP</strong> — if you choose to connect WHOOP, you authorize this app via
+          WHOOP's own OAuth login (you never share your WHOOP password with this app). The
+          app requests read-only access to your physiological cycles and recovery data
+          (scopes: <code>read:cycles</code>, <code>read:recovery</code>, <code>offline</code>)
+          to display calories burned, strain, and recovery score alongside your food log.
+          WHOOP access and refresh tokens are stored in your browser's <code>localStorage</code>.
+          The OAuth token exchange is proxied through a small Cloudflare Worker operated by
+          the app owner, whose only job is holding the WHOOP client secret required by
+          WHOOP's OAuth flow — it does not store or log your WHOOP data.
+        </li>
+      </ul>
+
+      <h2>What this app does not do</h2>
+      <ul>
+        <li>No ads, no analytics, no third-party trackers.</li>
+        <li>No data is sold or shared with anyone beyond the two services above.</li>
+        <li>No account creation or password of any kind for this app itself.</li>
+      </ul>
+
+      <h2>Revoking access</h2>
+      <p>
+        You can disconnect WHOOP at any time from within the app, which clears the stored
+        tokens from your browser. You can also revoke this app's access directly from your
+        WHOOP account settings at any time.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        This is an independently operated personal project, not a commercial product. If you
+        have questions about this policy, contact the app owner directly.
+      </p>
+    </main>
+  </body>
+</html>
