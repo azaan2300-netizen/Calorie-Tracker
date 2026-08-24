@@ -18,10 +18,12 @@ stands on protein intake and diets/body composition. Sources and reasoning are
 documented inline in that file. Profile also supports an optional photo.
 
 **2. Manual meal logging** (`src/components/AddFoodForm.tsx`, `src/lib/foodDatabase.ts`)
-Log a food by weight; picking a name from the built-in common-foods database
-(curated, USDA-derived per-100g reference values) auto-calculates
-calories/protein/carbs/fat, which stay editable. Unlisted foods can still be
-entered fully manually.
+Type a food name and a weight; calories/protein/carbs/fat are calculated
+automatically from a curated database of 250+ common foods (USDA-derived
+per-100g reference values) — those fields are computed output, not something
+you type. Matching is fuzzy (handles plurals/casual phrasing, e.g. "chicken
+thighs"). Only when nothing matches does a manual macro-entry fallback appear,
+clearly separated from the normal flow.
 
 **3. Barcode scanning** (`src/components/BarcodeScanner.tsx`, `BarcodeFoodPanel.tsx`)
 Scans a product barcode with the device camera (`html5-qrcode`) and looks up
@@ -34,11 +36,12 @@ depends on how complete that barcode's entry is in OFF's crowd-sourced data.
 **4. Free-text meal logging** (`src/lib/textParser.ts`, `src/lib/textFoodEstimate.ts`,
 `src/components/TextFoodPanel.tsx`)
 Describe a meal ("200g rice, 1 can of Coke") and it's split into food +
-quantity clauses, matched against Open Food Facts by name, and shown as an
-editable draft list before logging. This is a heuristic parser plus a lookup,
-not an AI model reading the sentence — a static client-side app has nowhere
-safe to hold an LLM API key, so results are meant to be reviewed/corrected,
-not taken as exact.
+quantity clauses, matched against the local food database first and then
+Open Food Facts for branded items, and shown as a draft list before logging.
+Matched items show computed macros (not editable fields); only unmatched
+items get manual macro-entry inputs. This is a heuristic parser plus a
+lookup, not an AI model reading the sentence — a static client-side app has
+nowhere safe to hold an LLM API key.
 
 The dashboard ties it together: daily progress bars for calories/protein/carbs/fat
 against your targets, with day-by-day navigation.
@@ -60,8 +63,7 @@ permission prompt.
 ## Testing
 
 `npm run test` runs fuzz suites (1,000 randomized inputs each, seeded for
-reproducibility) against the three data-parsing surfaces most exposed to bad
-input:
+reproducibility) against the data-parsing surfaces most exposed to bad input:
 
 - `src/lib/nutrition.test.ts` — every profile field combination never throws
   and always yields finite, non-negative, internally consistent macros.
@@ -71,12 +73,22 @@ input:
 - `src/lib/textParser.test.ts` — arbitrary free-text input (including empty,
   huge, non-string, and pathological strings) never throws and always yields
   bounded, sane quantities.
+- `src/lib/foodDatabase.test.ts` — fuzzed queries against the fuzzy matcher
+  never throw and only ever return a real database entry.
+- `src/lib/mealCombination.test.ts` — 1,000 randomly generated multi-food meal
+  descriptions (1-5 real database foods each, random quantities/separators)
+  never throw, split into the right number of items, and every item matches
+  back to a real database entry with finite, non-negative computed macros.
 
-These caught two real bugs during development: a case where extreme
-(but individually finite) Open Food Facts values could multiply into
-`Infinity`, and a case where a glued quantity+unit like `"200g"` (no space)
-wasn't recognized as a quantity at all. Both are fixed and covered by
-regression tests.
+This process caught several real bugs, all fixed and covered by regression
+tests: extreme (but individually finite) Open Food Facts values multiplying
+into `Infinity`; a glued quantity+unit like `"200g"` (no space) not being
+recognized as a quantity; a leftover "and" polluting the food name from
+", and " list phrasing ("rice, and chicken"); and a single un-commaed " and "
+incorrectly splitting a compound food name like "mac and cheese" in half
+(now only auto-split when 2+ "and"s signal a real list, since a single one is
+genuinely ambiguous and splitting confidently-wrong is worse than asking the
+user to add a comma).
 
 ## Project structure
 

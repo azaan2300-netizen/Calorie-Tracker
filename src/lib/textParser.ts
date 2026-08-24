@@ -23,6 +23,8 @@ const FILLER_PREFIXES = [
   /^eating\s+/i,
   /^also\s+/i,
   /^then\s+/i,
+  // Left over when a ", and " list ("rice, and chicken, and broccoli") gets comma-split.
+  /^and\s+/i,
 ];
 
 const LEADING_ARTICLE_WORDS = new Set(['a', 'an', 'the', 'some']);
@@ -81,11 +83,17 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 function stripFillers(text: string): string {
-  let result = text;
-  for (const re of FILLER_PREFIXES) {
-    result = result.replace(re, '');
+  let result = text.trim();
+  // Re-pass so a combo like "and then rice" fully strips regardless of pattern order,
+  // capped so pathological input can't loop indefinitely.
+  for (let pass = 0; pass < 4; pass++) {
+    const before = result;
+    for (const re of FILLER_PREFIXES) {
+      result = result.replace(re, '').trim();
+    }
+    if (result === before) break;
   }
-  return result.trim();
+  return result;
 }
 
 function parseAmountToken(token: string): number | null {
@@ -114,9 +122,20 @@ export function splitFoodClauses(text: string): string[] {
   if (typeof text !== 'string') return [];
   const cleaned = text.replace(/[\r\n]+/g, ',').trim();
   if (!cleaned) return [];
-  // Prefer commas; only fall back to splitting on " and " when there are none, since foods
-  // like "mac and cheese" would otherwise get split into nonsense.
-  const parts = cleaned.includes(',') ? cleaned.split(',') : cleaned.split(/\s+and\s+/i);
+
+  let parts: string[];
+  if (cleaned.includes(',')) {
+    parts = cleaned.split(',');
+  } else {
+    // With no comma, a single " and " is genuinely ambiguous -- it could be a two-item list
+    // ("chicken and rice") or a compound food name ("mac and cheese", "peanut butter and
+    // jelly"). Only split when there are 2+ occurrences, which reliably signals a real list;
+    // for exactly one, leave it as one query. Worst case it fails to match and the user
+    // corrects it, which beats confidently splitting a real food name in half.
+    const andCount = (cleaned.match(/\s+and\s+/gi) ?? []).length;
+    parts = andCount >= 2 ? cleaned.split(/\s+and\s+/i) : [cleaned];
+  }
+
   return parts
     .map((p) => p.trim())
     .filter(Boolean)

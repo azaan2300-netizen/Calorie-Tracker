@@ -398,6 +398,33 @@ button.secondary:disabled {
   border-radius: 10px;
 }
 
+.computed-macros-box,
+.no-match-box {
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.computed-macros-box {
+  background: var(--accent-bg);
+}
+
+.computed-macros-box p:first-child {
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.no-match-box {
+  background: var(--code-bg);
+}
+
+.computed-macros {
+  font-size: 15px;
+  color: var(--text-h);
+}
+
 .food-entry-macros {
   display: flex;
   align-items: center;

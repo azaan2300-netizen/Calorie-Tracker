@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FoodEntry, MealType } from '../types';
-import { findFoodByName, scaleFoodEntry, searchFoodDatabase, type FoodDatabaseEntry } from '../lib/foodDatabase';
+import { findBestFoodDatabaseMatch, scaleFoodEntry, searchFoodDatabase } from '../lib/foodDatabase';
 
 const MEAL_LABELS: Record<MealType, string> = {
   breakfast: 'Breakfast',
@@ -15,68 +15,68 @@ interface Props {
   onAdd: (entry: FoodEntry) => void;
 }
 
-const EMPTY = { name: '', weightGrams: '100', calories: '', proteinG: '', carbsG: '', fatG: '' };
+const EMPTY_MANUAL = { calories: '', proteinG: '', carbsG: '', fatG: '' };
 
 export default function AddFoodForm({ dateISO, defaultMealType, onAdd }: Props) {
   const [mealType, setMealType] = useState<MealType>(defaultMealType);
-  const [fields, setFields] = useState(EMPTY);
-  const [matchedFood, setMatchedFood] = useState<FoodDatabaseEntry | null>(null);
+  const [name, setName] = useState('');
+  const [weightGrams, setWeightGrams] = useState('100');
+  const [manualOverride, setManualOverride] = useState(false);
+  const [manualFields, setManualFields] = useState(EMPTY_MANUAL);
 
-  function applyMatch(food: FoodDatabaseEntry, weightGrams: string) {
-    const scaled = scaleFoodEntry(food, Number(weightGrams) || 0);
-    setFields((prev) => ({
-      ...prev,
-      calories: String(scaled.calories),
-      proteinG: String(scaled.proteinG),
-      carbsG: String(scaled.carbsG),
-      fatG: String(scaled.fatG),
-    }));
+  // Live fuzzy match against the food database as the user types -- no need to pick an exact
+  // datalist entry. Macros are always a computed result of (matched food x weight), never a
+  // field the user has to type themselves, unless nothing in the database matches at all.
+  const matchedFood = findBestFoodDatabaseMatch(name);
+  const computed = matchedFood ? scaleFoodEntry(matchedFood, Number(weightGrams) || 0) : null;
+  const suggestions = searchFoodDatabase(name);
+
+  function updateManual(key: keyof typeof EMPTY_MANUAL, value: string) {
+    setManualFields((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleNameChange(name: string) {
-    setFields((prev) => ({ ...prev, name }));
-    const match = findFoodByName(name);
-    setMatchedFood(match ?? null);
-    if (match) applyMatch(match, fields.weightGrams);
-  }
-
-  function handleWeightChange(weightGrams: string) {
-    setFields((prev) => ({ ...prev, weightGrams }));
-    if (matchedFood) applyMatch(matchedFood, weightGrams);
-  }
-
-  function update(key: 'calories' | 'proteinG' | 'carbsG' | 'fatG', value: string) {
-    setFields((prev) => ({ ...prev, [key]: value }));
+  function reset() {
+    setName('');
+    setWeightGrams('100');
+    setManualOverride(false);
+    setManualFields(EMPTY_MANUAL);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!fields.name.trim()) return;
+    if (!name.trim()) return;
+
+    const macros = computed ?? {
+      calories: Number(manualFields.calories) || 0,
+      proteinG: Number(manualFields.proteinG) || 0,
+      carbsG: Number(manualFields.carbsG) || 0,
+      fatG: Number(manualFields.fatG) || 0,
+    };
+    if (!computed && !manualOverride) return; // nothing to log yet
 
     onAdd({
       id: crypto.randomUUID(),
       dateISO,
       mealType,
-      name: fields.name.trim(),
-      servingDesc: `${fields.weightGrams || 0} g`,
-      calories: Number(fields.calories) || 0,
-      proteinG: Number(fields.proteinG) || 0,
-      carbsG: Number(fields.carbsG) || 0,
-      fatG: Number(fields.fatG) || 0,
+      name: matchedFood ? matchedFood.name : name.trim(),
+      servingDesc: `${weightGrams || 0} g`,
+      calories: macros.calories,
+      proteinG: macros.proteinG,
+      carbsG: macros.carbsG,
+      fatG: macros.fatG,
       source: 'manual',
     });
-    setFields(EMPTY);
-    setMatchedFood(null);
+    reset();
   }
 
-  const suggestions = searchFoodDatabase(fields.name);
+  const canSubmit = Boolean(computed) || manualOverride;
 
   return (
     <form className="card add-food-form" onSubmit={handleSubmit}>
-      <h3>Log a food manually</h3>
+      <h3>Log a food</h3>
       <p className="muted">
-        Pick a food from the list to auto-calculate macros by weight, or type your own and enter
-        macros directly.
+        Type a food name and weight — macros are calculated automatically from our database of
+        250+ common foods.
       </p>
       <div className="grid-2">
         <label>
@@ -84,8 +84,8 @@ export default function AddFoodForm({ dateISO, defaultMealType, onAdd }: Props) 
           <input
             type="text"
             list="food-database-options"
-            value={fields.name}
-            onChange={(e) => handleNameChange(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Chicken breast, cooked"
             required
           />
@@ -110,53 +110,77 @@ export default function AddFoodForm({ dateISO, defaultMealType, onAdd }: Props) 
           <input
             type="number"
             min={0}
-            value={fields.weightGrams}
-            onChange={(e) => handleWeightChange(e.target.value)}
-          />
-        </label>
-        <label>
-          Calories (kcal)
-          <input
-            type="number"
-            min={0}
-            value={fields.calories}
-            onChange={(e) => update('calories', e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          Protein (g)
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            value={fields.proteinG}
-            onChange={(e) => update('proteinG', e.target.value)}
-          />
-        </label>
-        <label>
-          Carbs (g)
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            value={fields.carbsG}
-            onChange={(e) => update('carbsG', e.target.value)}
-          />
-        </label>
-        <label>
-          Fat (g)
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            value={fields.fatG}
-            onChange={(e) => update('fatG', e.target.value)}
+            value={weightGrams}
+            onChange={(e) => setWeightGrams(e.target.value)}
           />
         </label>
       </div>
-      {matchedFood && <p className="muted">Auto-calculated from our food database — adjust if needed.</p>}
-      <button type="submit" className="primary">
+
+      {computed && matchedFood && (
+        <div className="computed-macros-box">
+          <p>Matched: {matchedFood.name}</p>
+          <p className="muted">
+            {computed.calories} kcal · {computed.proteinG}g protein · {computed.carbsG}g carbs ·{' '}
+            {computed.fatG}g fat
+          </p>
+        </div>
+      )}
+
+      {!computed && name.trim() && (
+        <div className="no-match-box">
+          <p className="error">No database match for "{name.trim()}" yet.</p>
+          {!manualOverride ? (
+            <button type="button" className="secondary link-button" onClick={() => setManualOverride(true)}>
+              Enter nutrition manually instead
+            </button>
+          ) : (
+            <div className="grid-2">
+              <label>
+                Calories (kcal)
+                <input
+                  type="number"
+                  min={0}
+                  value={manualFields.calories}
+                  onChange={(e) => updateManual('calories', e.target.value)}
+                  required
+                />
+              </label>
+              <label>
+                Protein (g)
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={manualFields.proteinG}
+                  onChange={(e) => updateManual('proteinG', e.target.value)}
+                />
+              </label>
+              <label>
+                Carbs (g)
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={manualFields.carbsG}
+                  onChange={(e) => updateManual('carbsG', e.target.value)}
+                />
+              </label>
+              <label>
+                Fat (g)
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={manualFields.fatG}
+                  onChange={(e) => updateManual('fatG', e.target.value)}
+                />
+              </label>
+            </div>
+          )}
+        </div>
+      )}
+
+      <button type="submit" className="primary" disabled={!canSubmit}>
         Add food
       </button>
     </form>

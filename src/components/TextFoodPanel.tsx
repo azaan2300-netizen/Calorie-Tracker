@@ -117,47 +117,58 @@ export default function TextFoodPanel({ dateISO, defaultMealType, onAdd }: Props
                     onChange={(e) => updateDraft(draft.id, { servingDesc: e.target.value })}
                   />
                 </label>
-                <label>
-                  Calories
-                  <input
-                    type="number"
-                    min={0}
-                    value={draft.calories}
-                    onChange={(e) => updateDraft(draft.id, { calories: Number(e.target.value) || 0 })}
-                  />
-                </label>
-                <label>
-                  Protein (g)
-                  <input
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    value={draft.proteinG}
-                    onChange={(e) => updateDraft(draft.id, { proteinG: Number(e.target.value) || 0 })}
-                  />
-                </label>
-                <label>
-                  Carbs (g)
-                  <input
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    value={draft.carbsG}
-                    onChange={(e) => updateDraft(draft.id, { carbsG: Number(e.target.value) || 0 })}
-                  />
-                </label>
-                <label>
-                  Fat (g)
-                  <input
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    value={draft.fatG}
-                    onChange={(e) => updateDraft(draft.id, { fatG: Number(e.target.value) || 0 })}
-                  />
-                </label>
               </div>
-              {!draft.matched && <p className="error">No database match — macros need manual entry.</p>}
+
+              {draft.matched ? (
+                <p className="muted computed-macros">
+                  {draft.calories} kcal · {draft.proteinG}g protein · {draft.carbsG}g carbs · {draft.fatG}g fat
+                </p>
+              ) : (
+                <>
+                  <p className="error">No database match — enter macros manually for this item.</p>
+                  <div className="grid-2">
+                    <label>
+                      Calories
+                      <input
+                        type="number"
+                        min={0}
+                        value={draft.calories}
+                        onChange={(e) => updateDraft(draft.id, { calories: Number(e.target.value) || 0 })}
+                      />
+                    </label>
+                    <label>
+                      Protein (g)
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.1}
+                        value={draft.proteinG}
+                        onChange={(e) => updateDraft(draft.id, { proteinG: Number(e.target.value) || 0 })}
+                      />
+                    </label>
+                    <label>
+                      Carbs (g)
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.1}
+                        value={draft.carbsG}
+                        onChange={(e) => updateDraft(draft.id, { carbsG: Number(e.target.value) || 0 })}
+                      />
+                    </label>
+                    <label>
+                      Fat (g)
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.1}
+                        value={draft.fatG}
+                        onChange={(e) => updateDraft(draft.id, { fatG: Number(e.target.value) || 0 })}
+                      />
+                    </label>
+                  </div>
+                </>
+              )}
               <button type="button" className="secondary link-button" onClick={() => removeDraft(draft.id)}>
                 Remove this item
               </button>
