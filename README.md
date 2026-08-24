@@ -19,11 +19,13 @@ documented inline in that file. Profile also supports an optional photo.
 
 **2. Manual meal logging** (`src/components/AddFoodForm.tsx`, `src/lib/foodDatabase.ts`)
 Type a food name and a weight; calories/protein/carbs/fat are calculated
-automatically from a curated database of 250+ common foods (USDA-derived
+automatically from a curated database of 380+ foods and drinks (USDA-derived
 per-100g reference values) — those fields are computed output, not something
 you type. Matching is fuzzy (handles plurals/casual phrasing, e.g. "chicken
-thighs"). Only when nothing matches does a manual macro-entry fallback appear,
-clearly separated from the normal flow.
+thighs", and accented input, e.g. "piña colada"). Coverage spans proteins,
+grains, produce, dairy, desserts, seasonings, Asian/Indian/Middle
+Eastern/Latin cuisine, and alcohol/cocktails. Only when nothing matches does
+a manual macro-entry fallback appear, clearly separated from the normal flow.
 
 **3. Barcode scanning** (`src/components/BarcodeScanner.tsx`, `BarcodeFoodPanel.tsx`)
 Scans a product barcode with the device camera (`html5-qrcode`) and looks up
@@ -77,7 +79,7 @@ npm install
 npm run dev      # start the dev server
 npm run build    # type-check + production build
 npm run lint      # oxlint
-npm run test      # vitest — includes 1,000-iteration fuzz suites
+npm run test      # vitest — includes 1,000- and 5,000-iteration fuzz suites
 ```
 
 Barcode scanning requires camera access, so open the app over `https://` or
@@ -111,16 +113,28 @@ reproducibility) against the data-parsing surfaces most exposed to bad input:
 - `src/lib/whoopApi.test.ts` — 1,000 malformed/edge-case WHOOP API payloads
   (missing fields, wrong types, unscored cycles, huge numbers) never throw
   and never produce non-finite or negative output.
+- `src/lib/comprehensiveFuzz.test.ts` — 10 independently-seeded rounds of 500
+  entries each (5,000 total), covering food, drinks, soda, alcohol, and
+  cocktails drawn from the full 380+-entry database plus adversarial input
+  (emoji, script tags, extreme lengths, mixed scripts, accented characters).
+  Each round also asserts a >85% real-match rate as a regression guard, not
+  just "didn't crash."
 
 This process caught several real bugs, all fixed and covered by regression
 tests: extreme (but individually finite) Open Food Facts values multiplying
 into `Infinity`; a glued quantity+unit like `"200g"` (no space) not being
-recognized as a quantity; a leftover "and" polluting the food name from
-", and " list phrasing ("rice, and chicken"); and a single un-commaed " and "
-incorrectly splitting a compound food name like "mac and cheese" in half
-(now only auto-split when 2+ "and"s signal a real list, since a single one is
-genuinely ambiguous and splitting confidently-wrong is worse than asking the
-user to add a comma).
+recognized as a quantity; a leftover "and"/"plus"/"&" polluting the food name
+after a list gets comma-split; a single un-commaed " and "/" & " incorrectly
+splitting a compound food name like "mac and cheese" in half (now only
+auto-split when 2+ occurrences signal a real list, applied per comma-segment
+so a tail like "rice, chicken and broccoli and asparagus" still splits
+correctly); semicolon- and "&"-separated lists not being recognized as lists
+at all; accented input ("piña colada", "jalapeño") shattering into
+meaningless single-letter fragments instead of matching, from an accent-fold
+missing in the fuzzy matcher; and natural quantity phrases without a leading
+number ("a bottle of beer", "a glass of wine", "a shot of tequila") leaving
+the container word stuck in the food query and dragging real matches below
+the fuzzy matcher's threshold.
 
 ## Project structure
 

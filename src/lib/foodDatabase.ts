@@ -286,6 +286,155 @@ export const FOOD_DATABASE: FoodDatabaseEntry[] = [
   { name: 'Chicken salad', caloriesPer100g: 190, proteinPer100g: 14, carbsPer100g: 3, fatPer100g: 13.5 },
   { name: 'Tuna salad', caloriesPer100g: 187, proteinPer100g: 16, carbsPer100g: 2.5, fatPer100g: 12.5 },
   { name: 'Caesar salad with dressing', caloriesPer100g: 130, proteinPer100g: 4, carbsPer100g: 5, fatPer100g: 11 },
+
+  // Alcohol & cocktails (kcal per 100g/100mL of the finished drink)
+  { name: 'Margarita', caloriesPer100g: 150, proteinPer100g: 0, carbsPer100g: 12, fatPer100g: 0 },
+  { name: 'Martini', caloriesPer100g: 150, proteinPer100g: 0, carbsPer100g: 0.5, fatPer100g: 0 },
+  { name: 'Mojito', caloriesPer100g: 90, proteinPer100g: 0, carbsPer100g: 8, fatPer100g: 0 },
+  { name: 'Old fashioned', caloriesPer100g: 180, proteinPer100g: 0, carbsPer100g: 6, fatPer100g: 0 },
+  { name: 'Moscow mule', caloriesPer100g: 95, proteinPer100g: 0, carbsPer100g: 9, fatPer100g: 0 },
+  { name: 'Pina colada', caloriesPer100g: 140, proteinPer100g: 0.5, carbsPer100g: 18, fatPer100g: 3 },
+  { name: 'Daiquiri', caloriesPer100g: 130, proteinPer100g: 0, carbsPer100g: 14, fatPer100g: 0 },
+  { name: 'Whiskey sour', caloriesPer100g: 130, proteinPer100g: 0.2, carbsPer100g: 10, fatPer100g: 0 },
+  { name: 'Cosmopolitan', caloriesPer100g: 140, proteinPer100g: 0, carbsPer100g: 10, fatPer100g: 0 },
+  { name: 'Mimosa', caloriesPer100g: 70, proteinPer100g: 0.2, carbsPer100g: 5, fatPer100g: 0 },
+  { name: 'Bloody mary', caloriesPer100g: 55, proteinPer100g: 0.5, carbsPer100g: 4, fatPer100g: 0 },
+  { name: 'Long island iced tea', caloriesPer100g: 170, proteinPer100g: 0, carbsPer100g: 10, fatPer100g: 0 },
+  { name: 'Rum and coke', caloriesPer100g: 110, proteinPer100g: 0, carbsPer100g: 10, fatPer100g: 0 },
+  { name: 'Gin and tonic', caloriesPer100g: 90, proteinPer100g: 0, carbsPer100g: 7, fatPer100g: 0 },
+  { name: 'Screwdriver', caloriesPer100g: 95, proteinPer100g: 0.4, carbsPer100g: 9, fatPer100g: 0 },
+  { name: 'Champagne', caloriesPer100g: 76, proteinPer100g: 0.1, carbsPer100g: 1.5, fatPer100g: 0 },
+  { name: 'Prosecco', caloriesPer100g: 74, proteinPer100g: 0.1, carbsPer100g: 1.7, fatPer100g: 0 },
+  { name: 'Sake', caloriesPer100g: 134, proteinPer100g: 0.5, carbsPer100g: 5, fatPer100g: 0 },
+  { name: 'Rose wine', caloriesPer100g: 83, proteinPer100g: 0.1, carbsPer100g: 2.6, fatPer100g: 0 },
+  { name: 'Sangria', caloriesPer100g: 89, proteinPer100g: 0.1, carbsPer100g: 8, fatPer100g: 0 },
+  { name: 'Rum', caloriesPer100g: 231, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Gin', caloriesPer100g: 263, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Bourbon', caloriesPer100g: 250, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Tequila', caloriesPer100g: 231, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Cognac', caloriesPer100g: 250, proteinPer100g: 0, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Hard seltzer', caloriesPer100g: 42, proteinPer100g: 0, carbsPer100g: 2, fatPer100g: 0 },
+  { name: 'Hard cider', caloriesPer100g: 47, proteinPer100g: 0, carbsPer100g: 5.3, fatPer100g: 0 },
+
+  // Asian cuisine
+  { name: 'California roll', caloriesPer100g: 129, proteinPer100g: 4.6, carbsPer100g: 20, fatPer100g: 3.1 },
+  { name: 'Spicy tuna roll', caloriesPer100g: 145, proteinPer100g: 7, carbsPer100g: 18, fatPer100g: 4.5 },
+  { name: 'Sashimi, salmon', caloriesPer100g: 146, proteinPer100g: 20, carbsPer100g: 0, fatPer100g: 7 },
+  { name: 'Nigiri, tuna', caloriesPer100g: 130, proteinPer100g: 9, carbsPer100g: 20, fatPer100g: 0.5 },
+  { name: 'Miso soup', caloriesPer100g: 40, proteinPer100g: 2.5, carbsPer100g: 4, fatPer100g: 1.5 },
+  { name: 'Pho, beef', caloriesPer100g: 60, proteinPer100g: 4.5, carbsPer100g: 8, fatPer100g: 1 },
+  { name: 'Banh mi', caloriesPer100g: 220, proteinPer100g: 10, carbsPer100g: 28, fatPer100g: 7.5 },
+  { name: 'Spring rolls, fresh', caloriesPer100g: 90, proteinPer100g: 4, carbsPer100g: 15, fatPer100g: 1.5 },
+  { name: 'Egg rolls, fried', caloriesPer100g: 240, proteinPer100g: 6, carbsPer100g: 25, fatPer100g: 13 },
+  { name: 'Potstickers', caloriesPer100g: 210, proteinPer100g: 7, carbsPer100g: 24, fatPer100g: 9 },
+  { name: "General Tso's chicken", caloriesPer100g: 220, proteinPer100g: 12, carbsPer100g: 20, fatPer100g: 11 },
+  { name: 'Orange chicken', caloriesPer100g: 235, proteinPer100g: 11, carbsPer100g: 26, fatPer100g: 10 },
+  { name: 'Kung pao chicken', caloriesPer100g: 180, proteinPer100g: 14, carbsPer100g: 10, fatPer100g: 10 },
+  { name: 'Chow mein', caloriesPer100g: 145, proteinPer100g: 5, carbsPer100g: 20, fatPer100g: 5 },
+  { name: 'Lo mein', caloriesPer100g: 150, proteinPer100g: 5, carbsPer100g: 22, fatPer100g: 5 },
+  { name: 'Pad see ew', caloriesPer100g: 160, proteinPer100g: 6, carbsPer100g: 21, fatPer100g: 6 },
+  { name: 'Green curry, chicken', caloriesPer100g: 130, proteinPer100g: 8, carbsPer100g: 6, fatPer100g: 9 },
+  { name: 'Red curry, chicken', caloriesPer100g: 135, proteinPer100g: 8, carbsPer100g: 7, fatPer100g: 9.5 },
+  { name: 'Tom yum soup', caloriesPer100g: 35, proteinPer100g: 3, carbsPer100g: 3, fatPer100g: 1 },
+  { name: 'Bibimbap', caloriesPer100g: 140, proteinPer100g: 6, carbsPer100g: 20, fatPer100g: 4 },
+  { name: 'Bulgogi', caloriesPer100g: 190, proteinPer100g: 18, carbsPer100g: 8, fatPer100g: 9.5 },
+  { name: 'Kimchi', caloriesPer100g: 15, proteinPer100g: 1.1, carbsPer100g: 2.4, fatPer100g: 0.5 },
+  { name: 'Korean fried chicken', caloriesPer100g: 280, proteinPer100g: 18, carbsPer100g: 15, fatPer100g: 17 },
+  { name: 'Japchae', caloriesPer100g: 130, proteinPer100g: 2.5, carbsPer100g: 22, fatPer100g: 3.5 },
+  { name: 'Ramen bowl with broth', caloriesPer100g: 60, proteinPer100g: 3, carbsPer100g: 8, fatPer100g: 1.8 },
+  { name: 'Udon noodles, cooked', caloriesPer100g: 127, proteinPer100g: 3.3, carbsPer100g: 27, fatPer100g: 0.3 },
+  { name: 'Soba noodles, cooked', caloriesPer100g: 99, proteinPer100g: 5.1, carbsPer100g: 21, fatPer100g: 0.1 },
+  { name: 'Tempura shrimp', caloriesPer100g: 240, proteinPer100g: 11, carbsPer100g: 20, fatPer100g: 13 },
+  { name: 'Teriyaki chicken', caloriesPer100g: 175, proteinPer100g: 20, carbsPer100g: 10, fatPer100g: 5.5 },
+  { name: 'Chicken katsu', caloriesPer100g: 250, proteinPer100g: 16, carbsPer100g: 16, fatPer100g: 13.5 },
+  { name: 'Gyoza', caloriesPer100g: 200, proteinPer100g: 7, carbsPer100g: 22, fatPer100g: 9 },
+  { name: 'Mochi', caloriesPer100g: 200, proteinPer100g: 2.5, carbsPer100g: 45, fatPer100g: 1.5 },
+  { name: 'Seaweed salad', caloriesPer100g: 45, proteinPer100g: 1.2, carbsPer100g: 5, fatPer100g: 2.5 },
+  { name: 'Bubble tea', caloriesPer100g: 65, proteinPer100g: 0.3, carbsPer100g: 16, fatPer100g: 0.3 },
+
+  // Indian cuisine
+  { name: 'Butter chicken', caloriesPer100g: 165, proteinPer100g: 11, carbsPer100g: 6, fatPer100g: 11 },
+  { name: 'Chicken tikka masala', caloriesPer100g: 160, proteinPer100g: 12, carbsPer100g: 6, fatPer100g: 10 },
+  { name: 'Samosa', caloriesPer100g: 260, proteinPer100g: 5, carbsPer100g: 28, fatPer100g: 15 },
+  { name: 'Chicken biryani', caloriesPer100g: 160, proteinPer100g: 8, carbsPer100g: 20, fatPer100g: 5.5 },
+  { name: 'Dal, lentil curry', caloriesPer100g: 105, proteinPer100g: 6, carbsPer100g: 15, fatPer100g: 2.5 },
+  { name: 'Palak paneer', caloriesPer100g: 140, proteinPer100g: 7, carbsPer100g: 7, fatPer100g: 10 },
+  { name: 'Tandoori chicken', caloriesPer100g: 150, proteinPer100g: 22, carbsPer100g: 2, fatPer100g: 6 },
+  { name: 'Chana masala', caloriesPer100g: 130, proteinPer100g: 6, carbsPer100g: 20, fatPer100g: 3 },
+  { name: 'Raita', caloriesPer100g: 65, proteinPer100g: 3, carbsPer100g: 5, fatPer100g: 3.5 },
+  { name: 'Mango lassi', caloriesPer100g: 95, proteinPer100g: 2.5, carbsPer100g: 17, fatPer100g: 1.8 },
+
+  // Middle Eastern & Mediterranean
+  { name: 'Shawarma, chicken', caloriesPer100g: 200, proteinPer100g: 18, carbsPer100g: 10, fatPer100g: 10 },
+  { name: 'Kebab, beef', caloriesPer100g: 215, proteinPer100g: 20, carbsPer100g: 3, fatPer100g: 14 },
+  { name: 'Tabbouleh', caloriesPer100g: 90, proteinPer100g: 2, carbsPer100g: 11, fatPer100g: 4.5 },
+  { name: 'Baba ganoush', caloriesPer100g: 110, proteinPer100g: 2, carbsPer100g: 9, fatPer100g: 8 },
+  { name: 'Baklava', caloriesPer100g: 430, proteinPer100g: 6, carbsPer100g: 46, fatPer100g: 26 },
+  { name: 'Tzatziki', caloriesPer100g: 75, proteinPer100g: 3.5, carbsPer100g: 3.5, fatPer100g: 5.5 },
+  { name: 'Dolma, stuffed grape leaves', caloriesPer100g: 140, proteinPer100g: 2.5, carbsPer100g: 18, fatPer100g: 7 },
+
+  // Latin American
+  { name: 'Tamale', caloriesPer100g: 190, proteinPer100g: 5, carbsPer100g: 22, fatPer100g: 9 },
+  { name: 'Enchilada, cheese', caloriesPer100g: 190, proteinPer100g: 8, carbsPer100g: 18, fatPer100g: 10 },
+  { name: 'Chile relleno', caloriesPer100g: 210, proteinPer100g: 8, carbsPer100g: 12, fatPer100g: 15 },
+  { name: 'Elote, Mexican street corn', caloriesPer100g: 160, proteinPer100g: 4, carbsPer100g: 18, fatPer100g: 8 },
+  { name: 'Churro', caloriesPer100g: 420, proteinPer100g: 5, carbsPer100g: 48, fatPer100g: 23 },
+  { name: 'Flan', caloriesPer100g: 150, proteinPer100g: 4, carbsPer100g: 24, fatPer100g: 4 },
+  { name: 'Empanada, beef', caloriesPer100g: 260, proteinPer100g: 9, carbsPer100g: 24, fatPer100g: 14 },
+
+  // Desserts
+  { name: 'Tiramisu', caloriesPer100g: 290, proteinPer100g: 5, carbsPer100g: 29, fatPer100g: 17 },
+  { name: 'Cheesecake', caloriesPer100g: 321, proteinPer100g: 5.5, carbsPer100g: 26, fatPer100g: 23 },
+  { name: 'Creme brulee', caloriesPer100g: 300, proteinPer100g: 4, carbsPer100g: 24, fatPer100g: 21 },
+  { name: 'Chocolate pudding', caloriesPer100g: 150, proteinPer100g: 3, carbsPer100g: 25, fatPer100g: 4 },
+  { name: 'Gelato', caloriesPer100g: 180, proteinPer100g: 3.5, carbsPer100g: 24, fatPer100g: 8 },
+  { name: 'Sorbet', caloriesPer100g: 130, proteinPer100g: 0.2, carbsPer100g: 32, fatPer100g: 0.1 },
+  { name: 'Macaron', caloriesPer100g: 400, proteinPer100g: 6, carbsPer100g: 55, fatPer100g: 18 },
+  { name: 'Eclair', caloriesPer100g: 300, proteinPer100g: 5, carbsPer100g: 30, fatPer100g: 18 },
+  { name: 'Cannoli', caloriesPer100g: 335, proteinPer100g: 7, carbsPer100g: 35, fatPer100g: 18 },
+  { name: 'Pumpkin pie', caloriesPer100g: 225, proteinPer100g: 4, carbsPer100g: 30, fatPer100g: 10 },
+  { name: 'Pecan pie', caloriesPer100g: 400, proteinPer100g: 4.5, carbsPer100g: 55, fatPer100g: 20 },
+  { name: 'Fudge', caloriesPer100g: 420, proteinPer100g: 2, carbsPer100g: 70, fatPer100g: 15 },
+  { name: 'Caramel', caloriesPer100g: 380, proteinPer100g: 2.5, carbsPer100g: 77, fatPer100g: 8 },
+
+  // Seasonings, spices & sauces (per 100g reference, typically eaten in small quantities)
+  { name: 'Cinnamon, ground', caloriesPer100g: 247, proteinPer100g: 4, carbsPer100g: 81, fatPer100g: 1.2 },
+  { name: 'Cumin, ground', caloriesPer100g: 375, proteinPer100g: 18, carbsPer100g: 44, fatPer100g: 22 },
+  { name: 'Paprika', caloriesPer100g: 282, proteinPer100g: 14, carbsPer100g: 54, fatPer100g: 13 },
+  { name: 'Garlic powder', caloriesPer100g: 331, proteinPer100g: 17, carbsPer100g: 73, fatPer100g: 0.7 },
+  { name: 'Chili powder', caloriesPer100g: 282, proteinPer100g: 13, carbsPer100g: 50, fatPer100g: 14 },
+  { name: 'Oregano, dried', caloriesPer100g: 265, proteinPer100g: 9, carbsPer100g: 69, fatPer100g: 4.3 },
+  { name: 'Turmeric, ground', caloriesPer100g: 312, proteinPer100g: 9.7, carbsPer100g: 67, fatPer100g: 3.3 },
+  { name: 'Ginger, fresh', caloriesPer100g: 80, proteinPer100g: 1.8, carbsPer100g: 18, fatPer100g: 0.8 },
+  { name: 'Soy sauce', caloriesPer100g: 53, proteinPer100g: 8, carbsPer100g: 4.9, fatPer100g: 0.6 },
+  { name: 'Sriracha', caloriesPer100g: 93, proteinPer100g: 1.9, carbsPer100g: 19, fatPer100g: 0.9 },
+  { name: 'Hot sauce', caloriesPer100g: 12, proteinPer100g: 0.5, carbsPer100g: 2, fatPer100g: 0.4 },
+  { name: 'BBQ sauce', caloriesPer100g: 172, proteinPer100g: 0.6, carbsPer100g: 41, fatPer100g: 0.5 },
+  { name: 'Ranch dressing', caloriesPer100g: 430, proteinPer100g: 1, carbsPer100g: 6, fatPer100g: 45 },
+  { name: 'Italian dressing', caloriesPer100g: 260, proteinPer100g: 0.3, carbsPer100g: 8, fatPer100g: 25 },
+  { name: 'Balsamic vinegar', caloriesPer100g: 88, proteinPer100g: 0.5, carbsPer100g: 17, fatPer100g: 0 },
+  { name: 'Worcestershire sauce', caloriesPer100g: 78, proteinPer100g: 0, carbsPer100g: 19, fatPer100g: 0 },
+
+  // Exotic / other fruits & foods
+  { name: 'Dragon fruit', caloriesPer100g: 60, proteinPer100g: 1.2, carbsPer100g: 13, fatPer100g: 0.4 },
+  { name: 'Lychee', caloriesPer100g: 66, proteinPer100g: 0.8, carbsPer100g: 17, fatPer100g: 0.4 },
+  { name: 'Durian', caloriesPer100g: 147, proteinPer100g: 1.5, carbsPer100g: 27, fatPer100g: 5.3 },
+  { name: 'Jackfruit', caloriesPer100g: 95, proteinPer100g: 1.7, carbsPer100g: 23, fatPer100g: 0.6 },
+  { name: 'Star fruit', caloriesPer100g: 31, proteinPer100g: 1, carbsPer100g: 6.7, fatPer100g: 0.3 },
+  { name: 'Passion fruit', caloriesPer100g: 97, proteinPer100g: 2.2, carbsPer100g: 23, fatPer100g: 0.7 },
+  { name: 'Plantain, fried', caloriesPer100g: 240, proteinPer100g: 1.3, carbsPer100g: 32, fatPer100g: 12 },
+  { name: 'Taro, cooked', caloriesPer100g: 112, proteinPer100g: 0.5, carbsPer100g: 27, fatPer100g: 0.1 },
+  { name: 'Bone broth', caloriesPer100g: 15, proteinPer100g: 2.5, carbsPer100g: 0.5, fatPer100g: 0.5 },
+  { name: 'Protein bar', caloriesPer100g: 380, proteinPer100g: 30, carbsPer100g: 40, fatPer100g: 12 },
+
+  // Coffee & tea drinks
+  { name: 'Latte', caloriesPer100g: 42, proteinPer100g: 2.2, carbsPer100g: 4, fatPer100g: 1.6 },
+  { name: 'Cappuccino', caloriesPer100g: 35, proteinPer100g: 1.9, carbsPer100g: 3.4, fatPer100g: 1.3 },
+  { name: 'Espresso', caloriesPer100g: 2, proteinPer100g: 0.1, carbsPer100g: 0, fatPer100g: 0.2 },
+  { name: 'Cold brew coffee', caloriesPer100g: 2, proteinPer100g: 0.3, carbsPer100g: 0, fatPer100g: 0 },
+  { name: 'Chai latte', caloriesPer100g: 50, proteinPer100g: 1.8, carbsPer100g: 8, fatPer100g: 1.3 },
+  { name: 'Matcha latte', caloriesPer100g: 45, proteinPer100g: 2, carbsPer100g: 6, fatPer100g: 1.5 },
+  { name: 'Frappuccino', caloriesPer100g: 90, proteinPer100g: 1.5, carbsPer100g: 16, fatPer100g: 2.5 },
 ];
 
 export function searchFoodDatabase(query: string, limit = 8): FoodDatabaseEntry[] {
@@ -297,6 +446,12 @@ export function searchFoodDatabase(query: string, limit = 8): FoodDatabaseEntry[
 function normalizeWords(text: string): string[] {
   return text
     .toLowerCase()
+    // Fold accented letters to their base form first (e.g. "piña" -> "pina", "jalapeño" ->
+    // "jalapeno") -- without this, the next line's strip would instead shatter them into
+    // meaningless single-letter fragments ("pi" + "a"), breaking matching for both database
+    // entries and real user input that includes the accent.
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
     .filter(Boolean)

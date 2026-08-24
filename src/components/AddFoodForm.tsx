@@ -76,7 +76,7 @@ export default function AddFoodForm({ dateISO, defaultMealType, onAdd }: Props) 
       <h3>Log a food</h3>
       <p className="muted">
         Type a food name and weight — macros are calculated automatically from our database of
-        250+ common foods.
+        380+ foods and drinks.
       </p>
       <div className="grid-2">
         <label>

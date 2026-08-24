@@ -15,6 +15,12 @@ describe('findBestFoodDatabaseMatch', () => {
     expect(findBestFoodDatabaseMatch('banana')?.name).toBe('Banana');
   });
 
+  it('matches accented input to its ASCII database entry (Unicode diacritic folding)', () => {
+    expect(findBestFoodDatabaseMatch('piña colada')?.name).toBe('Pina colada');
+    expect(findBestFoodDatabaseMatch('jalapeño')).toBeUndefined(); // not in the database, but must not throw/garble
+    expect(findBestFoodDatabaseMatch('crème brûlée')?.name).toBe('Creme brulee');
+  });
+
   it('still matches a branded product when its generic food category is covered', () => {
     // "trader joes ramen noodles" now reasonably matches the generic ramen entry, since half
     // the words describe an actual food we have -- the database can't know every brand, but

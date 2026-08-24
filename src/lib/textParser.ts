@@ -23,8 +23,13 @@ const FILLER_PREFIXES = [
   /^eating\s+/i,
   /^also\s+/i,
   /^then\s+/i,
-  // Left over when a ", and " list ("rice, and chicken, and broccoli") gets comma-split.
+  // Left over when a list joined with a conjunction ("rice, and chicken", "rice, plus chicken",
+  // "rice, & chicken", "rice, as well as chicken") gets comma-split.
   /^and\s+/i,
+  /^plus\s+/i,
+  /^&\s+/i,
+  /^as well as\s+/i,
+  /^along with\s+/i,
 ];
 
 const LEADING_ARTICLE_WORDS = new Set(['a', 'an', 'the', 'some']);
@@ -71,6 +76,16 @@ const UNIT_TO_GRAMS: Record<string, number> = {
   bottles: 500,
   serving: 100,
   servings: 100,
+  shot: 44, // standard 1.5 fl oz pour
+  shots: 44,
+  glass: 240,
+  glasses: 240,
+  pint: 568,
+  pints: 568,
+  scoop: 30,
+  scoops: 30,
+  handful: 30,
+  handfuls: 30,
 };
 
 const DEFAULT_SERVING_GRAMS = 150; // used when no quantity at all is given
@@ -123,18 +138,24 @@ export function splitFoodClauses(text: string): string[] {
   const cleaned = text.replace(/[\r\n]+/g, ',').trim();
   if (!cleaned) return [];
 
-  let parts: string[];
-  if (cleaned.includes(',')) {
-    parts = cleaned.split(',');
-  } else {
-    // With no comma, a single " and " is genuinely ambiguous -- it could be a two-item list
-    // ("chicken and rice") or a compound food name ("mac and cheese", "peanut butter and
-    // jelly"). Only split when there are 2+ occurrences, which reliably signals a real list;
-    // for exactly one, leave it as one query. Worst case it fails to match and the user
-    // corrects it, which beats confidently splitting a real food name in half.
-    const andCount = (cleaned.match(/\s+and\s+/gi) ?? []).length;
-    parts = andCount >= 2 ? cleaned.split(/\s+and\s+/i) : [cleaned];
-  }
+  // Commas and semicolons are unambiguous list separators -- always split on them first.
+  const primaryParts = /[,;]/.test(cleaned) ? cleaned.split(/[,;]/) : [cleaned];
+
+  // Within each resulting segment, a single " and "/" & " is still genuinely ambiguous -- it
+  // could be a two-item list ("chicken and rice") or a compound food name ("mac and cheese",
+  // "peanut butter and jelly", "M&M's" -- note that one has no surrounding spaces around "&",
+  // so it never matches here anyway). Only split when there are 2+ occurrences within that
+  // segment, which reliably signals a real list; for exactly one, leave it as one query. Worst
+  // case it fails to match and the user corrects it, which beats confidently splitting a real
+  // food name in half. Applying this per-segment (not just to the whole string) catches a tail
+  // like "rice, chicken and broccoli and asparagus" where the list-worthy "and"s only show up
+  // after an earlier comma.
+  const parts = primaryParts.flatMap((part) => {
+    const trimmedPart = part.trim();
+    if (!trimmedPart) return [];
+    const conjunctionCount = (trimmedPart.match(/\s+(?:and|&)\s+/gi) ?? []).length;
+    return conjunctionCount >= 2 ? trimmedPart.split(/\s+(?:and|&)\s+/i) : [trimmedPart];
+  });
 
   return parts
     .map((p) => p.trim())
@@ -183,6 +204,20 @@ export function parseFoodClause(rawText: string): ParsedFoodClause | null {
       quantityLabel = `${tokens[0]} (assumed ${DEFAULT_ITEM_GRAMS}g each)`;
     }
     if (tokens[idx]?.toLowerCase() === 'of') idx += 1;
+  } else if (LEADING_ARTICLE_WORDS.has(tokens[0]?.toLowerCase())) {
+    // "a can of beer" / "a slice of pizza" / "a glass of wine" -- an article followed by a
+    // known unit word implies a quantity of 1, the same as if the user had typed "1 can of
+    // beer". Without this, the leftover unit word ("can"/"slice"/"glass"/...) stays stuck in
+    // the food query and can drag a real match below the fuzzy matcher's coverage threshold.
+    const possibleUnit = tokens[1]?.toLowerCase().replace(/[.,]$/, '');
+    const perUnitGrams = possibleUnit ? UNIT_TO_GRAMS[possibleUnit] : undefined;
+    if (perUnitGrams) {
+      grams = perUnitGrams;
+      assumed = false;
+      quantityLabel = `${tokens[0]} ${possibleUnit}`;
+      idx = 2;
+      if (tokens[idx]?.toLowerCase() === 'of') idx += 1;
+    }
   }
 
   if (grams === null) grams = DEFAULT_SERVING_GRAMS;

@@ -14,11 +14,12 @@ function toCasualQuery(name: string): string {
 }
 
 const QUANTITY_PREFIXES = ['', '100g ', '200g ', '1.5 oz ', '2 ', 'a ', 'some ', '1/2 cup ', '350ml '];
-// Comma-based separators are the officially documented way to list multiple items (the UI
-// says so). A bare single " and " with no comma is deliberately left unsplit elsewhere since
-// it's ambiguous with a compound food name ("mac and cheese") -- that's covered by its own
-// test above, not fuzzed here as if it were a supported list separator.
-const SEPARATORS = [', ', '\n', ', and '];
+// Comma/semicolon are unambiguous list separators; ", and "/", plus "/", & " are too, since the
+// leading conjunction word gets stripped after the comma split. A bare single " and "/" & " with
+// no comma is deliberately left unsplit elsewhere since it's ambiguous with a compound food name
+// ("mac and cheese") -- that's covered by its own test above, not fuzzed here as if it were a
+// supported list separator on its own.
+const SEPARATORS = [', ', '\n', ', and ', '; ', ', plus ', ', & '];
 
 describe('", and " list phrasing regression', () => {
   it('strips a leftover leading "and" so it does not pollute the food name', () => {
@@ -34,6 +35,33 @@ describe('", and " list phrasing regression', () => {
     for (const clause of clauses) {
       expect(findBestFoodDatabaseMatch(clause.foodQuery)).toBeDefined();
     }
+  });
+
+  it('splits a semicolon-separated list, which no comma-detection previously handled', () => {
+    const clauses = parseFoodDescription('chicken breast; white rice; broccoli');
+    expect(clauses.map((c) => c.foodQuery)).toEqual(['chicken breast', 'white rice', 'broccoli']);
+  });
+
+  it('splits a "&"-joined list of 2+ items without breaking a literal ampersand food name', () => {
+    const clauses = parseFoodDescription('chicken breast & white rice & broccoli');
+    expect(clauses.map((c) => c.foodQuery)).toEqual(['chicken breast', 'white rice', 'broccoli']);
+  });
+
+  it('strips a leftover leading "plus"/"&" the same way it strips "and"', () => {
+    expect(parseFoodClause('plus white rice')?.foodQuery).toBe('white rice');
+    expect(parseFoodClause('& white rice')?.foodQuery).toBe('white rice');
+  });
+
+  it('splits and matches every item in a ", plus " list', () => {
+    const clauses = parseFoodDescription('chicken breast, plus white rice, plus broccoli');
+    expect(clauses.map((c) => c.foodQuery)).toEqual(['chicken breast', 'white rice', 'broccoli']);
+  });
+
+  it('applies the 2+-conjunction split within a segment after an earlier comma', () => {
+    // The list-worthy "and"s only appear in the tail here, after an unrelated leading comma --
+    // the per-segment split must still catch them.
+    const clauses = parseFoodDescription('rice, chicken and broccoli and asparagus');
+    expect(clauses.map((c) => c.foodQuery)).toEqual(['rice', 'chicken', 'broccoli', 'asparagus']);
   });
 });
 
