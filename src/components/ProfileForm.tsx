@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ActivityLevel, BodyType, Goal, Profile, Sex } from '../types';
 import { ACTIVITY_LABELS, BODY_TYPE_LABELS, GOAL_LABELS } from '../lib/nutrition';
+import { downscaleImageToDataUrl } from '../lib/image';
 
 const DEFAULT_PROFILE: Profile = {
   name: '',
@@ -20,9 +21,27 @@ interface Props {
 
 export default function ProfileForm({ profile, onSave }: Props) {
   const [form, setForm] = useState<Profile>(profile ?? DEFAULT_PROFILE);
+  const [photoError, setPhotoError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function update<K extends keyof Profile>(key: K, value: Profile[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function handlePhotoChange(file: File | undefined) {
+    if (!file) return;
+    setPhotoError('');
+    try {
+      const dataUrl = await downscaleImageToDataUrl(file);
+      update('photoDataUrl', dataUrl);
+    } catch {
+      setPhotoError('Could not load that photo. Try a different image.');
+    }
+  }
+
+  function removePhoto() {
+    update('photoDataUrl', undefined);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -37,6 +56,33 @@ export default function ProfileForm({ profile, onSave }: Props) {
         We use this to calculate a calorie and macro baseline with the Mifflin-St Jeor equation
         and ISSN sports-nutrition protein guidelines.
       </p>
+
+      <div className="photo-picker">
+        <div className="avatar avatar-lg">
+          {form.photoDataUrl ? (
+            <img src={form.photoDataUrl} alt="Profile" />
+          ) : (
+            <span>{form.name.trim().charAt(0).toUpperCase() || '?'}</span>
+          )}
+        </div>
+        <div className="photo-picker-actions">
+          <label className="secondary file-button">
+            {form.photoDataUrl ? 'Change photo' : 'Add photo'}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handlePhotoChange(e.target.files?.[0])}
+            />
+          </label>
+          {form.photoDataUrl && (
+            <button type="button" className="secondary" onClick={removePhoto}>
+              Remove
+            </button>
+          )}
+        </div>
+        {photoError && <p className="error">{photoError}</p>}
+      </div>
 
       <label>
         Name

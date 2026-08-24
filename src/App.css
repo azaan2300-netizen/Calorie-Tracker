@@ -12,7 +12,94 @@
 .app-header {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.app-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
+}
+
+.greeting {
+  color: var(--text);
+  font-size: 15px;
+}
+
+.header-avatar-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.avatar {
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-sm {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+.avatar-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 26px;
+}
+
+.photo-picker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.photo-picker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.file-button input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  padding: 4px 0;
+  text-decoration: underline;
+  width: fit-content;
 }
 
 .app-nav,
@@ -54,6 +141,23 @@ main {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s ease;
+}
+
+textarea {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 1px;
 }
 
 .dashboard {
@@ -264,6 +368,34 @@ button.secondary:disabled {
 .source-tag.source-barcode {
   background: var(--accent-bg);
   color: var(--accent);
+}
+
+.source-tag.source-text {
+  background: rgba(79, 191, 127, 0.15);
+  color: #2f9e5c;
+}
+
+.text-food-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.text-food-drafts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.draft-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
 }
 
 .food-entry-macros {

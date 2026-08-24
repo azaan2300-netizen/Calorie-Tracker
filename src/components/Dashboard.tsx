@@ -9,6 +9,7 @@ import { todayISO } from '../lib/storage';
 // html5-qrcode pulls in a sizeable barcode-decoding library; only load it once the
 // user actually opens the scan-barcode tab.
 const BarcodeFoodPanel = lazy(() => import('./BarcodeFoodPanel'));
+const TextFoodPanel = lazy(() => import('./TextFoodPanel'));
 
 interface Props {
   profile: Profile;
@@ -33,7 +34,7 @@ function currentMealSuggestion(): MealType {
 
 export default function Dashboard({ profile, entries, onAddEntry, onDeleteEntry }: Props) {
   const [selectedDate, setSelectedDate] = useState(todayISO());
-  const [loggerTab, setLoggerTab] = useState<'manual' | 'barcode'>('manual');
+  const [loggerTab, setLoggerTab] = useState<'manual' | 'barcode' | 'text'>('manual');
 
   const targets = useMemo(() => calculateMacroTargets(profile), [profile]);
   const dayEntries = useMemo(
@@ -99,13 +100,26 @@ export default function Dashboard({ profile, entries, onAddEntry, onDeleteEntry 
           >
             Scan barcode
           </button>
+          <button
+            type="button"
+            className={loggerTab === 'text' ? 'tab active' : 'tab'}
+            onClick={() => setLoggerTab('text')}
+          >
+            Describe a meal
+          </button>
         </div>
 
-        {loggerTab === 'manual' ? (
+        {loggerTab === 'manual' && (
           <AddFoodForm dateISO={selectedDate} defaultMealType={mealSuggestion} onAdd={onAddEntry} />
-        ) : (
+        )}
+        {loggerTab === 'barcode' && (
           <Suspense fallback={<p className="muted">Loading scanner…</p>}>
             <BarcodeFoodPanel dateISO={selectedDate} defaultMealType={mealSuggestion} onAdd={onAddEntry} />
+          </Suspense>
+        )}
+        {loggerTab === 'text' && (
+          <Suspense fallback={<p className="muted">Loading…</p>}>
+            <TextFoodPanel dateISO={selectedDate} defaultMealType={mealSuggestion} onAdd={onAddEntry} />
           </Suspense>
         )}
       </div>

@@ -20,6 +20,8 @@ export interface Profile {
   activityLevel: ActivityLevel;
   goal: Goal;
   bodyType: BodyType;
+  /** Downscaled JPEG data URL, kept small enough to live comfortably in localStorage. */
+  photoDataUrl?: string;
 }
 
 export interface MacroTargets {
@@ -31,7 +33,7 @@ export interface MacroTargets {
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
-export type FoodSource = 'manual' | 'barcode';
+export type FoodSource = 'manual' | 'barcode' | 'text';
 
 export interface FoodEntry {
   id: string;

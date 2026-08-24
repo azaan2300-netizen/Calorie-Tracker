@@ -103,8 +103,13 @@ export function calculateMacroTargets(profile: Profile): MacroTargets {
   let fatCalories = calories * fatPercent;
   const minFatCalories = 0.5 * profile.weightKg * CALORIES_PER_G_FAT; // hormonal-health floor
   fatCalories = Math.max(fatCalories, minFatCalories);
-  const fatG = fatCalories / CALORIES_PER_G_FAT;
 
+  // For a very heavy bodyweight combined with an aggressive deficit, the protein and fat
+  // floors above can together exceed the calorie target. Raise the target to match rather
+  // than silently letting the macros overshoot the displayed calorie number.
+  calories = Math.max(calories, proteinCalories + fatCalories);
+
+  const fatG = fatCalories / CALORIES_PER_G_FAT;
   const remainingCalories = Math.max(calories - proteinCalories - fatCalories, 0);
   const carbsG = remainingCalories / CALORIES_PER_G_CARB;
 

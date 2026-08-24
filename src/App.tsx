@@ -8,6 +8,13 @@ import './App.css';
 
 type View = 'dashboard' | 'profile';
 
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
 function App() {
   const [profile, setProfile] = useState<Profile | null>(() => loadProfile());
   const [entries, setEntries] = useState<FoodEntry[]>(() => loadEntries());
@@ -37,24 +44,49 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Calorie &amp; Macro Tracker</h1>
-        {profile && (
-          <nav className="app-nav">
+        <div className="app-title-row">
+          <h1>Calorie &amp; Macro Tracker</h1>
+          {profile && (
             <button
               type="button"
-              className={view === 'dashboard' ? 'tab active' : 'tab'}
-              onClick={() => setView('dashboard')}
-            >
-              Dashboard
-            </button>
-            <button
-              type="button"
-              className={view === 'profile' ? 'tab active' : 'tab'}
+              className="header-avatar-button"
               onClick={() => setView('profile')}
+              aria-label="Edit profile"
             >
-              Profile
+              <div className="avatar avatar-sm">
+                {profile.photoDataUrl ? (
+                  <img src={profile.photoDataUrl} alt="" />
+                ) : (
+                  <span>{profile.name.trim().charAt(0).toUpperCase() || '?'}</span>
+                )}
+              </div>
             </button>
-          </nav>
+          )}
+        </div>
+
+        {profile && (
+          <>
+            <p className="greeting">
+              {greeting()}
+              {profile.name ? `, ${profile.name}` : ''}
+            </p>
+            <nav className="app-nav">
+              <button
+                type="button"
+                className={view === 'dashboard' ? 'tab active' : 'tab'}
+                onClick={() => setView('dashboard')}
+              >
+                Dashboard
+              </button>
+              <button
+                type="button"
+                className={view === 'profile' ? 'tab active' : 'tab'}
+                onClick={() => setView('profile')}
+              >
+                Profile
+              </button>
+            </nav>
+          </>
         )}
       </header>
 

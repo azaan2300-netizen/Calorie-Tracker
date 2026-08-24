@@ -12,6 +12,7 @@ const MEAL_LABELS: Record<MealType, string> = {
 const SOURCE_LABELS: Record<FoodEntry['source'], string> = {
   manual: 'manual',
   barcode: 'barcode',
+  text: 'text',
 };
 
 interface Props {
@@ -21,7 +22,7 @@ interface Props {
 
 export default function MealLog({ entries, onDelete }: Props) {
   if (entries.length === 0) {
-    return <p className="muted">No food logged for this day yet.</p>;
+    return <p className="muted">Nothing logged yet — add a food above to get started.</p>;
   }
 
   return (
