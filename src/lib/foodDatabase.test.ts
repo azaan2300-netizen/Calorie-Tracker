@@ -15,8 +15,15 @@ describe('findBestFoodDatabaseMatch', () => {
     expect(findBestFoodDatabaseMatch('banana')?.name).toBe('Banana');
   });
 
-  it('returns undefined for a specific branded product not in the curated list', () => {
-    expect(findBestFoodDatabaseMatch('trader joes ramen noodles')).toBeUndefined();
+  it('still matches a branded product when its generic food category is covered', () => {
+    // "trader joes ramen noodles" now reasonably matches the generic ramen entry, since half
+    // the words describe an actual food we have -- the database can't know every brand, but
+    // it shouldn't give up when the underlying food is a known category.
+    expect(findBestFoodDatabaseMatch('trader joes ramen noodles')?.name).toBe('Ramen noodles, cooked');
+  });
+
+  it('returns undefined for a branded product with no matching food category at all', () => {
+    expect(findBestFoodDatabaseMatch('trader joes cauliflower gnocchi')).toBeUndefined();
   });
 
   it('returns undefined for empty/whitespace input', () => {
