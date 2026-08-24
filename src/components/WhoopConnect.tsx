@@ -74,10 +74,29 @@ export default function WhoopConnect({ onSynced }: Props) {
 
   if (status === 'not-configured') {
     return (
-      <p className="muted">
-        WHOOP sync isn't set up yet for this deployment — see <code>cloudflare-worker/README.md</code>{' '}
-        for the one-time setup.
-      </p>
+      <div className="whoop-setup-steps">
+        <p className="muted">WHOOP sync needs a one-time setup before you can connect:</p>
+        <ol className="muted">
+          <li>
+            Register an app at{' '}
+            <a href="https://developer.whoop.com" target="_blank" rel="noopener noreferrer">
+              developer.whoop.com
+            </a>{' '}
+            with redirect URL <code>{getRedirectUri()}</code> — this gives you a Client ID and Client
+            Secret.
+          </li>
+          <li>
+            Deploy the small Cloudflare Worker in <code>cloudflare-worker/</code> (it holds your Client
+            Secret, which can't safely live in this site's public code) — full steps in{' '}
+            <code>cloudflare-worker/README.md</code>.
+          </li>
+          <li>
+            Set <code>VITE_WHOOP_CLIENT_ID</code> and <code>VITE_WHOOP_TOKEN_PROXY_URL</code> as GitHub
+            repo variables (Settings → Secrets and variables → Actions → Variables), then trigger a
+            rebuild.
+          </li>
+        </ol>
+      </div>
     );
   }
 
@@ -88,6 +107,10 @@ export default function WhoopConnect({ onSynced }: Props) {
   if (status === 'idle' || status === 'error') {
     return (
       <div>
+        <p className="muted">
+          You'll log in on WHOOP's own page with your own WHOOP account — this app never sees your
+          password, and only your data (synced to your browser) is stored.
+        </p>
         {error && <p className="error">{error}</p>}
         <button type="button" className="secondary" onClick={handleConnect}>
           Connect WHOOP
