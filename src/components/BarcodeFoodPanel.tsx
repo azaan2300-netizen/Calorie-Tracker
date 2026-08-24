@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FoodEntry, MealType } from '../types';
 import {
+  hasUsableNutrition,
   isSingleServingContainer,
   lookupBarcode,
   scaleProductByServings,
@@ -144,7 +145,24 @@ export default function BarcodeFoodPanel({ dateISO, defaultMealType, onAdd }: Pr
         </div>
       )}
 
-      {status === 'found' && product && preview && (
+      {status === 'found' && product && !hasUsableNutrition(product) && (
+        <div className="scanned-product">
+          <h4>{product.name}</h4>
+          {product.brand && <p className="muted">{product.brand}</p>}
+          <p className="error">
+            Open Food Facts has this product but no nutrition facts filled in yet — this can
+            happen for niche or store-brand items. Try scanning again in case a different entry
+            exists, or log it manually instead.
+          </p>
+          <div className="row-buttons">
+            <button type="button" className="secondary" onClick={reset}>
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {status === 'found' && product && hasUsableNutrition(product) && preview && (
         <div className="scanned-product">
           <h4>{product.name}</h4>
           {product.brand && <p className="muted">{product.brand}</p>}

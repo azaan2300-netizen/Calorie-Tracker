@@ -28,10 +28,15 @@ clearly separated from the normal flow.
 **3. Barcode scanning** (`src/components/BarcodeScanner.tsx`, `BarcodeFoodPanel.tsx`)
 Scans a product barcode with the device camera (`html5-qrcode`) and looks up
 nutrition facts from the free, keyless [Open Food Facts](https://world.openfoodfacts.org/)
-database (3M+ products) — name, brand, pack size, and per-serving data when
-published. Detects single-serving containers (e.g. one can) and lets you log
-by servings/units instead of only by weight; specificity of the name/brand
-depends on how complete that barcode's entry is in OFF's crowd-sourced data.
+database (3M+ products, including most US retailers' store-brand items —
+Trader Joe's, Whole Foods 365, Kroger, Costco/Kirkland, etc.) — name, brand,
+pack size, and per-serving data when published. Detects single-serving
+containers (e.g. one can) and lets you log by servings/units instead of only
+by weight. Specificity depends on how complete that barcode's crowd-sourced
+entry is; if a match exists but has no nutrition facts filled in yet (common
+for niche items), the app says so rather than showing a misleading "0 kcal."
+Free-text search applies the same rule: it skips an incomplete top match in
+favor of a usable one, or reports no match rather than a false zero.
 
 **4. Free-text meal logging** (`src/lib/textParser.ts`, `src/lib/textFoodEstimate.ts`,
 `src/components/TextFoodPanel.tsx`)

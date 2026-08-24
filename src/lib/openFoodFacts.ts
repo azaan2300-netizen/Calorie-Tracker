@@ -141,14 +141,19 @@ export async function lookupBarcode(barcode: string): Promise<BarcodeProduct | n
   return parseProductJson(barcode, data.product);
 }
 
-/** Best-effort text search, used by the free-text meal logger. Returns the top match, if any. */
+/** True when a product actually has usable nutrition data, vs. an incomplete crowd-sourced entry. */
+export function hasUsableNutrition(product: BarcodeProduct): boolean {
+  return product.caloriesPer100g > 0 || product.perServing !== null;
+}
+
+/** Best-effort text search, used by the free-text meal logger. Returns the top usable match. */
 export async function searchFoodByName(query: string): Promise<BarcodeProduct | null> {
   const params = new URLSearchParams({
     search_terms: query,
     search_simple: '1',
     action: 'process',
     json: '1',
-    page_size: '1',
+    page_size: '5',
     sort_by: 'unique_scans_n',
     fields: PRODUCT_FIELDS,
   });
@@ -157,8 +162,17 @@ export async function searchFoodByName(query: string): Promise<BarcodeProduct | 
     throw new Error(`Open Food Facts search failed (${response.status})`);
   }
   const data = (await response.json()) as OFFSearchResponse;
-  const first = data.products?.[0];
-  return parseProductJson(query, first);
+  const candidates = data.products ?? [];
+
+  // Open Food Facts is crowd-sourced, so the most-scanned match for a niche/store-brand item
+  // sometimes has an incomplete entry (no nutrition facts filled in yet). Prefer the first
+  // candidate that actually has usable data over blindly taking the very first result -- a
+  // "match" reporting 0 calories would silently mislead more than an honest no-match would.
+  for (const candidate of candidates) {
+    const parsed = parseProductJson(query, candidate);
+    if (parsed && hasUsableNutrition(parsed)) return parsed;
+  }
+  return null;
 }
 
 /** True when the whole package is essentially one serving (e.g. a single can or bottle). */

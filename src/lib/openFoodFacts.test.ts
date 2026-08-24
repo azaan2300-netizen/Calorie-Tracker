@@ -1,6 +1,69 @@
 import { describe, expect, it } from 'vitest';
-import { parseProductJson, isSingleServingContainer, scaleProductToGrams, scaleProductByServings } from './openFoodFacts';
+import {
+  parseProductJson,
+  isSingleServingContainer,
+  scaleProductToGrams,
+  scaleProductByServings,
+  hasUsableNutrition,
+} from './openFoodFacts';
 import { mulberry32, pick } from './testRandom';
+
+describe('hasUsableNutrition', () => {
+  it('is false for a product with no calorie or per-serving data (incomplete crowd-sourced entry)', () => {
+    const incomplete = parseProductJson('123', { product_name: 'Some Niche Snack', nutriments: {} });
+    expect(incomplete).not.toBeNull();
+    expect(hasUsableNutrition(incomplete!)).toBe(false);
+  });
+
+  it('is true when per-100g calories are present', () => {
+    const complete = parseProductJson('123', {
+      product_name: 'Some Snack',
+      nutriments: { 'energy-kcal_100g': 200 },
+    });
+    expect(hasUsableNutrition(complete!)).toBe(true);
+  });
+
+  it('is true when only per-serving calories are present (no per-100g)', () => {
+    const servingOnly = parseProductJson('123', {
+      product_name: 'Some Snack',
+      nutriments: { 'energy-kcal_serving': 150 },
+    });
+    expect(hasUsableNutrition(servingOnly!)).toBe(true);
+  });
+});
+
+/** Mirrors the candidate-selection loop inside searchFoodByName, without the network call,
+ * so the "skip incomplete entries" behavior is directly testable. */
+function selectBestCandidate(query: string, candidates: Parameters<typeof parseProductJson>[1][]) {
+  for (const candidate of candidates) {
+    const parsed = parseProductJson(query, candidate);
+    if (parsed && hasUsableNutrition(parsed)) return parsed;
+  }
+  return null;
+}
+
+describe('search candidate selection (skips incomplete crowd-sourced entries)', () => {
+  it('skips a popular-but-incomplete match in favor of a later complete one', () => {
+    const candidates = [
+      { product_name: 'Popular But Incomplete', nutriments: {} },
+      { product_name: 'Less Popular But Complete', nutriments: { 'energy-kcal_100g': 250 } },
+    ];
+    const result = selectBestCandidate('some query', candidates);
+    expect(result?.name).toBe('Less Popular But Complete');
+  });
+
+  it('returns null when every candidate is incomplete, rather than a misleading 0-kcal match', () => {
+    const candidates = [
+      { product_name: 'Incomplete One', nutriments: {} },
+      { product_name: 'Incomplete Two', nutriments: {} },
+    ];
+    expect(selectBestCandidate('some query', candidates)).toBeNull();
+  });
+
+  it('returns null for an empty candidate list', () => {
+    expect(selectBestCandidate('some query', [])).toBeNull();
+  });
+});
 
 // A grab-bag of "weird" values fuzzed into product fields: missing, wrong type, negative,
 // huge, NaN-producing strings, empty, etc. The parser must never throw on any combination.
