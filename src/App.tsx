@@ -4,9 +4,10 @@ import { loadProfile, saveProfile, loadEntries, saveEntries } from './lib/storag
 import { calculateBMR, calculateMacroTargets, calculateTDEE } from './lib/nutrition';
 import ProfileForm from './components/ProfileForm';
 import Dashboard from './components/Dashboard';
+import ReportView from './components/ReportView';
 import './App.css';
 
-type View = 'dashboard' | 'profile';
+type View = 'dashboard' | 'report' | 'profile';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -80,6 +81,13 @@ function App() {
               </button>
               <button
                 type="button"
+                className={view === 'report' ? 'tab active' : 'tab'}
+                onClick={() => setView('report')}
+              >
+                Report
+              </button>
+              <button
+                type="button"
                 className={view === 'profile' ? 'tab active' : 'tab'}
                 onClick={() => setView('profile')}
               >
@@ -96,6 +104,8 @@ function App() {
             <ProfileForm profile={profile} onSave={handleSaveProfile} />
             {profile && <TargetsSummary profile={profile} />}
           </>
+        ) : view === 'report' ? (
+          <ReportView entries={entries} />
         ) : (
           <Dashboard
             profile={profile}

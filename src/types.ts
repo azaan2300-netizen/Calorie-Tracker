@@ -48,3 +48,21 @@ export interface FoodEntry {
   source: FoodSource;
   barcode?: string;
 }
+
+/** One day's WHOOP metrics, synced from a physiological cycle (+ its recovery, if scored). */
+export interface WhoopDailyMetrics {
+  dateISO: string;
+  caloriesBurned: number;
+  strain: number;
+  avgHeartRate: number | null;
+  maxHeartRate: number | null;
+  /** 0-100, null when the cycle hasn't been scored yet (e.g. still in progress). */
+  recoveryScore: number | null;
+}
+
+export interface WhoopTokens {
+  accessToken: string;
+  refreshToken: string;
+  /** Epoch ms when the access token expires. */
+  expiresAt: number;
+}

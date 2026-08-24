@@ -26,6 +26,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # Repository variables (Settings -> Secrets and variables -> Actions -> Variables).
+          # Neither value is sensitive on its own -- see cloudflare-worker/README.md. Unset
+          # until you complete that setup; the app shows a "not configured" message instead of
+          # a broken WHOOP connect button until both are set.
+          VITE_WHOOP_CLIENT_ID: ${{ vars.VITE_WHOOP_CLIENT_ID }}
+          VITE_WHOOP_TOKEN_PROXY_URL: ${{ vars.VITE_WHOOP_TOKEN_PROXY_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

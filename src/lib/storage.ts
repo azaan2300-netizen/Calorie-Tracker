@@ -1,7 +1,9 @@
-import type { FoodEntry, Profile } from '../types';
+import type { FoodEntry, Profile, WhoopDailyMetrics, WhoopTokens } from '../types';
 
 const PROFILE_KEY = 'calorie-tracker:profile';
 const ENTRIES_KEY = 'calorie-tracker:entries';
+const WHOOP_TOKENS_KEY = 'calorie-tracker:whoop-tokens';
+const WHOOP_METRICS_KEY = 'calorie-tracker:whoop-metrics';
 
 export function loadProfile(): Profile | null {
   const raw = localStorage.getItem(PROFILE_KEY);
@@ -29,6 +31,44 @@ export function loadEntries(): FoodEntry[] {
 
 export function saveEntries(entries: FoodEntry[]): void {
   localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries));
+}
+
+export function loadWhoopTokens(): WhoopTokens | null {
+  const raw = localStorage.getItem(WHOOP_TOKENS_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as WhoopTokens;
+  } catch {
+    return null;
+  }
+}
+
+export function saveWhoopTokens(tokens: WhoopTokens): void {
+  localStorage.setItem(WHOOP_TOKENS_KEY, JSON.stringify(tokens));
+}
+
+export function clearWhoopTokens(): void {
+  localStorage.removeItem(WHOOP_TOKENS_KEY);
+}
+
+export function loadWhoopMetrics(): WhoopDailyMetrics[] {
+  const raw = localStorage.getItem(WHOOP_METRICS_KEY);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as WhoopDailyMetrics[];
+  } catch {
+    return [];
+  }
+}
+
+/** Merges freshly synced days into the stored history, replacing any same-date entries. */
+export function mergeWhoopMetrics(freshDays: WhoopDailyMetrics[]): WhoopDailyMetrics[] {
+  const existing = loadWhoopMetrics();
+  const freshDates = new Set(freshDays.map((d) => d.dateISO));
+  const merged = [...existing.filter((d) => !freshDates.has(d.dateISO)), ...freshDays];
+  merged.sort((a, b) => a.dateISO.localeCompare(b.dateISO));
+  localStorage.setItem(WHOOP_METRICS_KEY, JSON.stringify(merged));
+  return merged;
 }
 
 export function todayISO(): string {

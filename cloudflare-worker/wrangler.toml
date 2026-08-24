@@ -1,0 +1,14 @@
+name = "calorie-tracker-whoop-proxy"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+# Your WHOOP Developer Dashboard client ID. Not secret -- the frontend embeds the same value
+# publicly as VITE_WHOOP_CLIENT_ID, so it's fine to commit here.
+WHOOP_CLIENT_ID = "REPLACE_WITH_YOUR_WHOOP_CLIENT_ID"
+
+# The frontend's origin, for CORS. Update if you deploy the app somewhere other than GitHub Pages.
+ALLOWED_ORIGIN = "https://azaan2300-netizen.github.io"
+
+# WHOOP_CLIENT_SECRET is NOT set here -- it must never be committed. Set it with:
+#   wrangler secret put WHOOP_CLIENT_SECRET

@@ -1,10 +1,11 @@
 import { lazy, Suspense, useMemo, useState } from 'react';
-import type { FoodEntry, MealType, Profile } from '../types';
+import type { FoodEntry, MealType, Profile, WhoopDailyMetrics } from '../types';
 import { calculateMacroTargets } from '../lib/nutrition';
 import MacroProgress from './MacroProgress';
 import MealLog from './MealLog';
 import AddFoodForm from './AddFoodForm';
-import { todayISO } from '../lib/storage';
+import WhoopConnect from './WhoopConnect';
+import { loadWhoopMetrics, todayISO } from '../lib/storage';
 
 // html5-qrcode pulls in a sizeable barcode-decoding library; only load it once the
 // user actually opens the scan-barcode tab.
@@ -35,8 +36,13 @@ function currentMealSuggestion(): MealType {
 export default function Dashboard({ profile, entries, onAddEntry, onDeleteEntry }: Props) {
   const [selectedDate, setSelectedDate] = useState(todayISO());
   const [loggerTab, setLoggerTab] = useState<'manual' | 'barcode' | 'text'>('manual');
+  const [whoopMetrics, setWhoopMetrics] = useState<WhoopDailyMetrics[]>(() => loadWhoopMetrics());
 
   const targets = useMemo(() => calculateMacroTargets(profile), [profile]);
+  const selectedDayWhoop = useMemo(
+    () => whoopMetrics.find((m) => m.dateISO === selectedDate) ?? null,
+    [whoopMetrics, selectedDate],
+  );
   const dayEntries = useMemo(
     () => entries.filter((e) => e.dateISO === selectedDate),
     [entries, selectedDate],
@@ -81,6 +87,37 @@ export default function Dashboard({ profile, entries, onAddEntry, onDeleteEntry 
       <div className="card">
         <h2>Daily targets</h2>
         <MacroProgress consumed={consumed} target={targets} />
+      </div>
+
+      <div className="card">
+        <h2>Fitness (WHOOP)</h2>
+        <WhoopConnect onSynced={() => setWhoopMetrics(loadWhoopMetrics())} />
+        {selectedDayWhoop ? (
+          <div className="whoop-summary">
+            <div className="whoop-stat-row">
+              <div className="whoop-stat">
+                <span className="whoop-stat-value">{selectedDayWhoop.caloriesBurned}</span>
+                <span className="muted">kcal burned</span>
+              </div>
+              <div className="whoop-stat">
+                <span className="whoop-stat-value">{selectedDayWhoop.strain}</span>
+                <span className="muted">strain</span>
+              </div>
+              <div className="whoop-stat">
+                <span className="whoop-stat-value">
+                  {selectedDayWhoop.recoveryScore !== null ? `${selectedDayWhoop.recoveryScore}%` : '—'}
+                </span>
+                <span className="muted">recovery</span>
+              </div>
+            </div>
+            <p className="muted">
+              Net calories: {Math.round(consumed.calories)} consumed − {selectedDayWhoop.caloriesBurned} burned ={' '}
+              <strong>{Math.round(consumed.calories) - selectedDayWhoop.caloriesBurned}</strong>
+            </p>
+          </div>
+        ) : (
+          <p className="muted">No WHOOP data synced for this day yet.</p>
+        )}
       </div>
 
       <div className="card">

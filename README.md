@@ -48,6 +48,25 @@ items get manual macro-entry inputs. This is a heuristic parser plus a
 lookup, not an AI model reading the sentence — a static client-side app has
 nowhere safe to hold an LLM API key.
 
+**5. WHOOP sync** (`src/lib/whoopAuth.ts`, `whoopApi.ts`, `whoopSync.ts`, `WhoopConnect.tsx`)
+Connects to WHOOP via OAuth2 and syncs calories burned and strain (converted
+from WHOOP's kilojoule energy figure) plus recovery score, shown on the
+Dashboard next to that day's food log with a computed net-calories line
+(consumed − burned). WHOOP doesn't track step count at all — it's a
+strain/recovery/heart-rate wearable, not a pedometer — so steps aren't part
+of this integration. The OAuth `client_secret` can't live in this static
+site's public code, so the token exchange runs through a small Cloudflare
+Worker (`cloudflare-worker/`) that only you can deploy, since it needs your
+own WHOOP developer account and secret — see `cloudflare-worker/README.md`
+for the one-time setup. Until it's configured, the app shows a "not set up"
+message instead of a broken connect button.
+
+**6. Report view** (`src/components/ReportView.tsx`)
+A 14-day table cross-referencing food logged (calories/protein/carbs/fat) with
+WHOOP calories burned, strain, and recovery — plus a computed net-calories
+column and running averages — so you can see how intake and activity relate
+day to day, not just calories in isolation.
+
 The dashboard ties it together: daily progress bars for calories/protein/carbs/fat
 against your targets, with day-by-day navigation.
 
@@ -64,6 +83,11 @@ npm run test      # vitest — includes 1,000-iteration fuzz suites
 Barcode scanning requires camera access, so open the app over `https://` or
 `localhost` (camera APIs are blocked on plain `http://`) and grant the camera
 permission prompt.
+
+WHOOP sync requires a one-time setup only you can do (your own WHOOP
+developer account + a small Cloudflare Worker deploy) — see
+`cloudflare-worker/README.md`. Without it, the rest of the app works
+normally; the WHOOP section just shows a "not configured" message.
 
 ## Testing
 
@@ -84,6 +108,9 @@ reproducibility) against the data-parsing surfaces most exposed to bad input:
   descriptions (1-5 real database foods each, random quantities/separators)
   never throw, split into the right number of items, and every item matches
   back to a real database entry with finite, non-negative computed macros.
+- `src/lib/whoopApi.test.ts` — 1,000 malformed/edge-case WHOOP API payloads
+  (missing fields, wrong types, unscored cycles, huge numbers) never throw
+  and never produce non-finite or negative output.
 
 This process caught several real bugs, all fixed and covered by regression
 tests: extreme (but individually finite) Open Food Facts values multiplying
@@ -113,6 +140,12 @@ src/
     BarcodeScanner.tsx        # camera barcode scanning
     BarcodeFoodPanel.tsx      # barcode lookup -> servings/weight -> log
     TextFoodPanel.tsx         # free-text meal description -> editable drafts -> log
-    MealLog.tsx                # grouped daily food log
-    MacroProgress.tsx          # progress bars vs targets
+    WhoopConnect.tsx           # WHOOP connect/sync/disconnect controls
+    ReportView.tsx              # 14-day food + WHOOP cross-reference table
+    MealLog.tsx                  # grouped daily food log
+    MacroProgress.tsx            # progress bars vs targets
+
+cloudflare-worker/            # separate small Worker; see its own README for setup
+  src/index.js                 # holds the WHOOP client_secret, proxies token exchange/refresh
+  wrangler.toml
 ```

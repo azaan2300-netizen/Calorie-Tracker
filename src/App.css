@@ -425,6 +425,73 @@ button.secondary:disabled {
   color: var(--text-h);
 }
 
+.whoop-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.whoop-summary .row-buttons {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.whoop-stat-row {
+  display: flex;
+  gap: 20px;
+}
+
+.whoop-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.whoop-stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.report-summary {
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-table-scroll {
+  overflow-x: auto;
+}
+
+.report-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.report-table th,
+.report-table td {
+  padding: 8px 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-table th:first-child,
+.report-table td:first-child {
+  text-align: left;
+}
+
+.report-table th {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.report-table td {
+  color: var(--text-h);
+}
+
 .food-entry-macros {
   display: flex;
   align-items: center;
