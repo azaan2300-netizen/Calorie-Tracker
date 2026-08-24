@@ -1,5 +1,6 @@
 import { parseFoodDescription } from './textParser';
 import { scaleProductToGrams, searchFoodByName } from './openFoodFacts';
+import { findBestFoodDatabaseMatch, scaleFoodEntry } from './foodDatabase';
 
 export interface FoodDraft {
   id: string;
@@ -10,7 +11,7 @@ export interface FoodDraft {
   proteinG: number;
   carbsG: number;
   fatG: number;
-  /** False when no Open Food Facts match was found; the draft still needs manual macros. */
+  /** False when no match was found anywhere; the draft still needs manual macros. */
   matched: boolean;
 }
 
@@ -19,6 +20,26 @@ async function resolveClauseToDraft(clause: ReturnType<typeof parseFoodDescripti
     id: crypto.randomUUID(),
     rawText: clause.rawText,
   };
+  const gramsLabel = `${clause.assumed ? '~' : ''}${Math.round(clause.grams)}g`;
+
+  // Check our curated common-foods database first: it's instant, needs no network, and
+  // covers everyday home-cooked foods ("chicken thighs", "rice", "2 eggs") better than a
+  // generic packaged-product search does. Branded/packaged items fall through to Open Food
+  // Facts below.
+  const localMatch = findBestFoodDatabaseMatch(clause.foodQuery);
+  if (localMatch) {
+    const scaled = scaleFoodEntry(localMatch, clause.grams);
+    return {
+      ...base,
+      name: localMatch.name,
+      servingDesc: `${clause.quantityLabel} (${gramsLabel})`,
+      calories: scaled.calories,
+      proteinG: scaled.proteinG,
+      carbsG: scaled.carbsG,
+      fatG: scaled.fatG,
+      matched: true,
+    };
+  }
 
   let product = null;
   try {
@@ -26,8 +47,6 @@ async function resolveClauseToDraft(clause: ReturnType<typeof parseFoodDescripti
   } catch {
     product = null;
   }
-
-  const gramsLabel = `${clause.assumed ? '~' : ''}${Math.round(clause.grams)}g`;
 
   if (product) {
     const scaled = scaleProductToGrams(product, clause.grams);
@@ -55,7 +74,7 @@ async function resolveClauseToDraft(clause: ReturnType<typeof parseFoodDescripti
   };
 }
 
-/** Parses a free-text meal description and looks each item up against Open Food Facts. */
+/** Parses a free-text meal description and looks each item up (local database, then OFF). */
 export async function estimateFoodDrafts(text: string): Promise<FoodDraft[]> {
   const clauses = parseFoodDescription(text);
   return Promise.all(clauses.map(resolveClauseToDraft));

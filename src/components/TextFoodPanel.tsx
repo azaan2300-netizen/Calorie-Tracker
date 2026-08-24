@@ -74,9 +74,10 @@ export default function TextFoodPanel({ dateISO, defaultMealType, onAdd }: Props
     <div className="card text-food-panel">
       <h3>Describe what you ate</h3>
       <p className="muted">
-        Separate items with commas, e.g. "200g rice, 150g grilled chicken, 1 can of Coke". This
-        estimates macros by matching each item against Open Food Facts — review and adjust before
-        adding, since it's a best guess, not an exact measurement.
+        Separate items with commas, e.g. "200g rice, 150g grilled chicken, 1 can of Coke". Each
+        item is matched against our common-foods database first, then Open Food Facts for
+        branded/packaged items — review and adjust before adding, since it's a best guess, not
+        an exact measurement.
       </p>
 
       <form onSubmit={handleEstimate} className="text-food-form">

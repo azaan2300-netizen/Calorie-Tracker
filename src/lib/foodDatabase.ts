@@ -90,6 +90,50 @@ export function searchFoodDatabase(query: string, limit = 8): FoodDatabaseEntry[
   return FOOD_DATABASE.filter((f) => f.name.toLowerCase().includes(q)).slice(0, limit);
 }
 
+function normalizeWords(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    // crude singularization so "thighs"/"eggs" match "thigh"/"egg" in the database
+    .map((w) => (w.length > 3 && w.endsWith('s') ? w.slice(0, -1) : w));
+}
+
+/**
+ * Fuzzy word-overlap match used by the free-text meal parser, so casual phrasing like
+ * "chicken thighs" or "eggs" still finds "Chicken thigh, cooked" / "Egg, whole, cooked"
+ * without requiring an exact name match. Ranks candidates by how much of the *query* they
+ * account for first (so a short query like "rice" isn't penalized against a longer, more
+ * descriptive database name), then prefers the entry with the fewest unrelated extra words.
+ */
+export function findBestFoodDatabaseMatch(query: string): FoodDatabaseEntry | undefined {
+  const queryWords = [...new Set(normalizeWords(query))];
+  if (queryWords.length === 0) return undefined;
+
+  let best: FoodDatabaseEntry | undefined;
+  let bestCoverage = 0;
+  let bestExtraWords = Infinity;
+
+  for (const food of FOOD_DATABASE) {
+    const nameWords = normalizeWords(food.name);
+    const nameWordSet = new Set(nameWords);
+    const overlap = queryWords.filter((w) => nameWordSet.has(w)).length;
+    if (overlap === 0) continue;
+
+    const coverage = overlap / queryWords.length;
+    const extraWords = nameWords.length - overlap;
+    const better = coverage > bestCoverage || (coverage === bestCoverage && extraWords < bestExtraWords);
+    if (better) {
+      best = food;
+      bestCoverage = coverage;
+      bestExtraWords = extraWords;
+    }
+  }
+
+  return bestCoverage >= 0.5 ? best : undefined;
+}
+
 export function scaleFoodEntry(entry: FoodDatabaseEntry, grams: number) {
   const factor = grams / 100;
   return {
